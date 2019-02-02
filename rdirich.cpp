@@ -13,8 +13,9 @@ arma::mat rdirichlet(int n, arma::rowvec alpha) {
   arma::mat dirich(n, l);
   for(int i=0; i<l; i++){
     dirich.col(i) = Rcpp::as<arma::colvec>(Rcpp::rgamma(n, alpha[i], 1));
-  } 
-  arma::vec V = sum(dirich,1);
+  }
+  arma::colvec iota(l, arma::fill::ones);
+  arma::vec V = dirich * iota;
   dirich.each_col() /= V;
   return dirich;
 }
@@ -31,7 +32,8 @@ arma::mat rd_armaMC(int n, arma::rowvec alpha, int threads) {
     double ai = alpha[i];
     dirich.col(i) = arma::randg<arma::colvec>(n, arma::distr_param(ai, b));
   }
-  arma::vec V = sum(dirich, 1);
+  arma::colvec iota(l, arma::fill::ones);
+  arma::vec V = dirich * iota;
   dirich.each_col() /= V;
   return dirich;
 }
@@ -45,7 +47,8 @@ arma::mat rd_arma(int n, arma::rowvec alpha) {
       double ai = alpha[i];
       dirich.col(i) = arma::randg<arma::colvec>(n, arma::distr_param(ai, b));
     } 
-    arma::vec V = sum(dirich, 1);
+    arma::colvec iota(l, arma::fill::ones);
+    arma::vec V = dirich * iota;
     dirich.each_col() /= V;
     return dirich;
   }
@@ -66,7 +69,8 @@ arma::mat rd_std(int n, arma::rowvec alpha){ // this is the fastest!
     std::generate(y.begin(), y.end(), draw);
     x.col(i) = y;
   }
-  arma::vec V = sum(x, 1);
+  arma::colvec iota(l, arma::fill::ones);
+  arma::vec V = x * iota;
   x.each_col() /= V;
   return x;
 }
@@ -85,7 +89,8 @@ arma::mat rd_boost(int n, arma::rowvec alpha) {
     std::generate(y.begin(), y.end(), gen);
     x.col(i) = y;
   }
-  arma::vec V = sum(x, 1);
+  arma::colvec iota(l, arma::fill::ones);
+  arma::vec V = x * iota;
   x.each_col() /= V;
   return x;
 }
@@ -143,7 +148,7 @@ chk_draws(R_dir, alpha)
 chk_draws(Rcpp_dir, alpha)
 chk_draws(boost_dir, alpha)
 chk_draws(arma_dir, alpha)
-chk_draws(armamc_dir, alpha)
+chk_draws(arma_mcdir, alpha)
 chk_draws(std_dir, alpha)
 
 library(microbenchmark)
