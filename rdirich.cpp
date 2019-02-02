@@ -37,7 +37,7 @@ arma::mat rd_armaMC(int n, arma::rowvec alpha, int threads) {
 }
 
 // [[Rcpp::export]]
-arma::mat rd_arma(int n, arma::rowvec alpha) { // this is the fastest!
+arma::mat rd_arma(int n, arma::rowvec alpha) { 
     unsigned int l = alpha.size();
     arma::mat dirich(n, l);
     double b = 1; // call to arma::distr_param ambiguous if this is an int
@@ -51,7 +51,7 @@ arma::mat rd_arma(int n, arma::rowvec alpha) { // this is the fastest!
   }
 
 // [[Rcpp::export]]
-arma::mat rd_std(int n, arma::rowvec alpha){
+arma::mat rd_std(int n, arma::rowvec alpha){ // this is the fastest!
   omp_set_num_threads(4);
   
   int l = alpha.size();
@@ -95,13 +95,15 @@ arma::mat rd_boost(int n, arma::rowvec alpha) {
 //
 
 /*** R
-
+# From
+# https://github.com/cran/MCMCpack/blob/ba7a28d7fb083ce6fdb17a8a1c0bb9d06394d3d3/R/distn.R
 rdir <- function(n, alpha) {
     l <- length(alpha)
     x <- matrix(rgamma(l*n,alpha),ncol=l,byrow=TRUE)
     sm <- x%*%rep(1,l)
     return(x/as.vector(sm))
 }
+###
 
 chk_draws <- function(arr_draws, alpha){
   print("Sum of differences with R equivalent:")
