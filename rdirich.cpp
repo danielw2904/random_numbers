@@ -50,14 +50,6 @@ arma::mat rd_arma(int n, arma::rowvec alpha) { // this is the fastest!
     return dirich;
   }
 
-
-std::mt19937 get_prng() {
-  std::random_device r;
-  std::seed_seq seed{r(), r(), r(), r()};
-  return std::mt19937(seed);
-}
-
-
 // [[Rcpp::export]]
 arma::mat rd_std(int n, arma::rowvec alpha){
   omp_set_num_threads(4);
